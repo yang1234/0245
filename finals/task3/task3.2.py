@@ -121,43 +121,64 @@ def main():
         all_results[model_type]["q_mes"] = np.array(q_mes_list[:max_len])
         all_results[model_type]["tau_cmd"] = np.array(tau_cmd_list[:max_len])
 
-    # Plot tracking error and control torques
-    fig, axs = plt.subplots(7, 3, figsize=(16, 24))
-    fig.suptitle("Tracking Error and Control Torques for MLP and Random Forest Models", fontsize=14)
+        # Plot tracking error for each joint
+    fig1, axs1 = plt.subplots(7, 1, figsize=(10, 14))
+    fig1.suptitle("Tracking Error for MLP and Random Forest Models", fontsize=12)
 
     for joint_idx in range(7):
         nn_tracking_error = all_results["neural_network"]["q_des"][:, joint_idx] - all_results["neural_network"]["q_mes"][:, joint_idx]
         rf_tracking_error = all_results["random_forest"]["q_des"][:, joint_idx] - all_results["random_forest"]["q_mes"][:, joint_idx]
 
-        axs[joint_idx, 0].plot(test_time_array[:max_len], nn_tracking_error, label='MLP Tracking Error', color='blue', linewidth=0.8)
-        axs[joint_idx, 0].plot(test_time_array[:max_len], rf_tracking_error, label='Random Forest Tracking Error', color='green', linestyle='--', linewidth=0.8)
-        axs[joint_idx, 0].set_title(f"Joint {joint_idx + 1} Tracking Error", fontsize=10)
-        axs[joint_idx, 0].set_xlabel("Time (s)", fontsize=8, labelpad=5)
-        axs[joint_idx, 0].set_ylabel("Error (rad)", fontsize=8, labelpad=5)
-        axs[joint_idx, 0].legend(fontsize=6, loc="upper right")
-        axs[joint_idx, 0].grid(True)
+        axs1[joint_idx].plot(test_time_array[:max_len], nn_tracking_error, label='MLP Tracking Error', color='blue', linewidth=0.8)
+        axs1[joint_idx].plot(test_time_array[:max_len], rf_tracking_error, label='Random Forest Tracking Error', color='green', linestyle='--', linewidth=0.8)
+        axs1[joint_idx].set_title(f"Joint {joint_idx + 1} Tracking Error", fontsize=8)
+        axs1[joint_idx].set_xlabel("Time (s)", fontsize=6)
+        axs1[joint_idx].set_ylabel("Error (rad)", fontsize=6)
+        axs1[joint_idx].legend(fontsize=5, loc="upper right")
+        axs1[joint_idx].grid(True)
 
+    plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+    plt.subplots_adjust(hspace=0.4)
+    plt.show()
+
+    # Plot control torques for each joint
+    fig2, axs2 = plt.subplots(7, 1, figsize=(10, 14))
+    fig2.suptitle("Control Torques for MLP and Random Forest Models", fontsize=12)
+
+    for joint_idx in range(7):
         nn_tau_cmd = all_results["neural_network"]["tau_cmd"][:, joint_idx]
         rf_tau_cmd = all_results["random_forest"]["tau_cmd"][:, joint_idx]
 
-        axs[joint_idx, 1].plot(test_time_array[:max_len], nn_tau_cmd, label='MLP Control Torque', color='blue', linewidth=0.8)
-        axs[joint_idx, 1].plot(test_time_array[:max_len], rf_tau_cmd, label='Random Forest Control Torque', color='green', linestyle='--', linewidth=0.8)
-        axs[joint_idx, 1].set_title(f"Joint {joint_idx + 1} Control Torque", fontsize=10)
-        axs[joint_idx, 1].set_xlabel("Time (s)", fontsize=8, labelpad=5)
-        axs[joint_idx, 1].set_ylabel("Torque (Nm)", fontsize=8, labelpad=5)
-        axs[joint_idx, 1].legend(fontsize=6, loc="upper right")
-        axs[joint_idx, 1].grid(True)
-
-        axs[joint_idx, 2].plot(test_time_array[:max_len], np.abs(nn_tracking_error), label="MLP Abs Error", color="blue", alpha=0.5, linewidth=0.8)
-        axs[joint_idx, 2].plot(test_time_array[:max_len], np.abs(rf_tracking_error), label="Random Forest Abs Error", color="green", linestyle="--", alpha=0.5, linewidth=0.8)
-        axs[joint_idx, 2].set_title(f"Joint {joint_idx + 1} Absolute Tracking Error", fontsize=10)
-        axs[joint_idx, 2].set_xlabel("Time (s)", fontsize=8, labelpad=5)
-        axs[joint_idx, 2].set_ylabel("Abs Error (rad)", fontsize=8, labelpad=5)
-        axs[joint_idx, 2].legend(fontsize=6, loc="upper right")
-        axs[joint_idx, 2].grid(True)
+        axs2[joint_idx].plot(test_time_array[:max_len], nn_tau_cmd, label='MLP Control Torque', color='blue', linewidth=0.8)
+        axs2[joint_idx].plot(test_time_array[:max_len], rf_tau_cmd, label='Random Forest Control Torque', color='green', linestyle='--', linewidth=0.8)
+        axs2[joint_idx].set_title(f"Joint {joint_idx + 1} Control Torque", fontsize=8)
+        axs2[joint_idx].set_xlabel("Time (s)", fontsize=6)
+        axs2[joint_idx].set_ylabel("Torque (Nm)", fontsize=6)
+        axs2[joint_idx].legend(fontsize=5, loc="upper right")
+        axs2[joint_idx].grid(True)
 
     plt.tight_layout(rect=[0, 0.03, 1, 0.95])
-    plt.subplots_adjust(hspace=0.6, wspace=0.3)
+    plt.subplots_adjust(hspace=0.4)
+    plt.show()
+
+    # Plot absolute tracking error for each joint
+    fig3, axs3 = plt.subplots(7, 1, figsize=(10, 14))
+    fig3.suptitle("Absolute Tracking Error for MLP and Random Forest Models", fontsize=12)
+
+    for joint_idx in range(7):
+        nn_tracking_error = all_results["neural_network"]["q_des"][:, joint_idx] - all_results["neural_network"]["q_mes"][:, joint_idx]
+        rf_tracking_error = all_results["random_forest"]["q_des"][:, joint_idx] - all_results["random_forest"]["q_mes"][:, joint_idx]
+
+        axs3[joint_idx].plot(test_time_array[:max_len], np.abs(nn_tracking_error), label="MLP Abs Error", color="blue", alpha=0.5, linewidth=0.8)
+        axs3[joint_idx].plot(test_time_array[:max_len], np.abs(rf_tracking_error), label="Random Forest Abs Error", color="green", linestyle="--", alpha=0.5, linewidth=0.8)
+        axs3[joint_idx].set_title(f"Joint {joint_idx + 1} Absolute Tracking Error", fontsize=8)
+        axs3[joint_idx].set_xlabel("Time (s)", fontsize=6)
+        axs3[joint_idx].set_ylabel("Abs Error (rad)", fontsize=6)
+        axs3[joint_idx].legend(fontsize=5, loc="upper right")
+        axs3[joint_idx].grid(True)
+
+    plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+    plt.subplots_adjust(hspace=0.4)
     plt.show()
 
 if __name__ == '__main__':
